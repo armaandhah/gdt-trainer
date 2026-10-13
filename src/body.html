@@ -1,0 +1,439 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1.6L10 5L0 8.4Z" class="ahp"/></marker>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="var(--muted)" stroke-width="1"/></pattern>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="tb">
+    <div class="tb-name">
+      <h1>GD&amp;T Trainer</h1>
+      <p>Engineering drawings and GD&amp;T from zero. Start with the basics, read two real drawings callout by callout, then drill symbols, bonus tolerance, and feature control frames.</p>
+    </div>
+    <div class="tb-meta">
+      <div>Std</div><div>ASME Y14.5-2018</div>
+      <div>Units</div><div>mm</div>
+      <div>Sheet</div><div id="sheetNo">1 of 6</div>
+      <div>Rev</div><div>B</div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="t-basics" data-tab="basics" aria-selected="true"><span>A</span>Start here</button>
+    <button role="tab" id="t-drawings" data-tab="drawings" aria-selected="false"><span>B</span>Read a drawing</button>
+    <button role="tab" id="t-symbols" data-tab="symbols" aria-selected="false"><span>C</span>Symbols</button>
+    <button role="tab" id="t-quiz" data-tab="quiz" aria-selected="false"><span>D</span>Quiz</button>
+    <button role="tab" id="t-bonus" data-tab="bonus" aria-selected="false"><span>E</span>Bonus calc</button>
+    <button role="tab" id="t-fcf" data-tab="fcf" aria-selected="false"><span>F</span>Frame reader</button>
+  </nav>
+
+  <!-- ===================== BASICS ===================== -->
+  <section class="panel" id="p-basics">
+    <h2>Engineering drawings, from the beginning</h2>
+    <p class="lede">No background needed. Work through these in order: each lesson builds on the last, and each one has worked examples. When you finish, the <a href="#drawings" data-goto="drawings">Read a drawing</a> tab puts it all together on two real parts.</p>
+    <div class="toc" id="toc"></div>
+
+    <!-- 1 -->
+    <article class="lesson" id="L-what" data-title="What a drawing is">
+      <div class="txt">
+        <div class="step"><b>01</b><h3>What an engineering drawing is for</h3></div>
+        <p>A CAD model describes a perfect part. No real part is perfect. Every hole a machinist drills comes out a little big or a little small, a little left or a little right. The drawing answers the question the CAD model can't: <strong>how far off is still OK?</strong></p>
+        <p>That makes a drawing a contract between three people:</p>
+        <ul>
+          <li><strong>The designer</strong> says what the part must do and how much variation it can take.</li>
+          <li><strong>The machinist</strong> picks processes that will land inside those limits.</li>
+          <li><strong>The inspector</strong> measures the finished part and accepts or rejects it based only on what the drawing says.</li>
+        </ul>
+        <p>If it isn't on the drawing, nobody is obligated to meet it. If the drawing is ambiguous, two people can measure the same part and disagree about whether it's good.</p>
+        <div class="ex"><h4>Example</h4><p>You design a bracket with a 10 mm hole for a bolt. The shop makes 50 of them. Real measurements: 10.03, 9.98, 10.11, 10.01, and so on. Which ones are good? Without a tolerance on the drawing, there is no answer. With <span class="m">10 ±0.1</span>, the answer is clear: 9.9 to 10.1 passes, so the 10.11 part fails.</p></div>
+        <div class="ex warn"><h4>Common beginner mistake</h4><p>Putting every number on the drawing "just in case." Each dimension is a requirement someone has to make and check. Dimension what matters for function, once, from the right place.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-what" viewBox="0 0 520 250"></svg>
+        <p class="figcap">Same design, three real parts. The drawing's tolerance decides which ones ship.</p></div>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="lesson" id="L-sheet" data-title="Anatomy of a sheet">
+      <div class="txt">
+        <div class="step"><b>02</b><h3>Anatomy of a drawing sheet</h3></div>
+        <p>Almost every drawing you'll ever see has the same five regions. Learn where they are and you can find your way around any sheet.</p>
+        <ul class="marklist">
+          <li><i>1</i><span><strong>Border and zones.</strong> Letters down the side, numbers across the top, like a map grid. "See zone B3" tells someone exactly where to look on a big sheet.</span></li>
+          <li><i>2</i><span><strong>Views.</strong> Flat pictures of the part from different directions, with dimensions. This is most of the sheet. Lesson 03 covers how views work.</span></li>
+          <li><i>3</i><span><strong>Notes.</strong> Requirements that apply to the whole part or are easier written as text: material spec, finish, "break all sharp edges", heat treat.</span></li>
+          <li><i>4</i><span><strong>Title block.</strong> Part name and number, material, units, scale, who drew and checked it, and the general tolerances that apply to any dimension without its own tolerance.</span></li>
+          <li><i>5</i><span><strong>Revision block.</strong> A log of changes. Rev A, Rev B, and so on. Always make sure you're looking at the latest rev before you make or buy anything.</span></li>
+        </ul>
+        <div class="ex"><h4>Reading a title block</h4>
+          <div class="tbl"><table>
+            <tr><th>Field</th><th>Example</th><th>What it tells you</th></tr>
+            <tr><td>Part number</td><td class="m">GT-1001</td><td>The unique ID. Two parts with the same name can have different numbers.</td></tr>
+            <tr><td>Rev</td><td class="m">A</td><td>Which version of the drawing this is.</td></tr>
+            <tr><td>Material</td><td class="m">6061-T6 AL</td><td>The alloy and temper. T6 means solution heat treated and aged.</td></tr>
+            <tr><td>Units</td><td class="m">MM</td><td>All dimensions are millimeters unless marked otherwise.</td></tr>
+            <tr><td>Scale</td><td class="m">1:1</td><td>Printed size versus real size. Never measure off a print. Use the numbers.</td></tr>
+            <tr><td>General tol.</td><td class="m">X.X ±0.2</td><td>Default tolerance for any dimension with no tolerance of its own (lesson 06).</td></tr>
+            <tr><td>Projection</td><td>cone symbol</td><td>Third-angle (US) or first-angle (Europe). Tells you how the views are arranged.</td></tr>
+          </table></div>
+        </div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-sheet" viewBox="0 0 520 340"></svg>
+        <p class="figcap">A typical sheet layout. Real sheets are bigger, but the regions are always in these places.</p></div>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="lesson" id="L-views" data-title="Orthographic views">
+      <div class="txt">
+        <div class="step"><b>03</b><h3>Views: turning a 3D part into flat pictures</h3></div>
+        <p>A drawing shows the part as if you looked straight at each face, one at a time. These are <strong>orthographic views</strong>. Each one shows only two dimensions: the front view shows width and height, the top view shows width and depth, the side view shows depth and height.</p>
+        <p>The views are lined up with each other on the sheet. A feature in the front view sits directly below the same feature in the top view, and directly beside it in the side view. That alignment is how you connect them in your head.</p>
+        <p><strong>Third-angle projection</strong> (used in the US and by ASME): imagine the part sitting inside a glass box. You look through each glass wall and trace what you see onto the glass, then unfold the box. The top view ends up <em>above</em> the front view, and the right side view ends up <em>to the right</em>.</p>
+        <p><strong>First-angle projection</strong> (Europe and much of Asia, ISO) places them the opposite way: top view below, right view on the left. The cone symbol in the title block tells you which one you're looking at. Mixing them up means you build a mirrored part.</p>
+        <div class="ex"><h4>Worked example: the L-block</h4>
+          <ul>
+            <li>In the <strong>front</strong> view you see the L shape: the base is 60 wide, the upright is 45 tall.</li>
+            <li>In the <strong>top</strong> view you see a rectangle 60 × 30 with a line at 15 from the left. That line is the step where the upright meets the base.</li>
+            <li>In the <strong>right</strong> view you see a rectangle 30 × 45 with a line at 15 up. Looking from the right, you see the end of the base below that line and the upright's face above it.</li>
+          </ul>
+        </div>
+        <div class="ex"><h4>How many views do you need?</h4><p>As few as fully describe the part. A flat plate often needs two. A turned shaft usually needs one, because the <span class="m">Ø</span> symbol already tells you it's round. Complex castings may need six views plus sections.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-views" viewBox="0 0 520 340"></svg>
+        <p class="figcap">The same L-block in third-angle views, with a 3D view for reference. Faint dotted lines show how the views line up.</p></div>
+        <div class="figbox"><svg class="fig" id="fig-proj" viewBox="0 0 520 110"></svg>
+        <p class="figcap">The projection symbol. Third angle: the cone's small end points toward the circles. First angle: it points away.</p></div>
+      </div>
+    </article>
+
+    <!-- 4 -->
+    <article class="lesson" id="L-lines" data-title="Line types">
+      <div class="txt">
+        <div class="step"><b>04</b><h3>Line types: every line means something</h3></div>
+        <p>On a drawing, line thickness and dash pattern carry meaning. A dashed line is never decoration. Here are the ones you'll see constantly:</p>
+        <div class="tbl"><table id="lineTable">
+          <tr><th>Line</th><th>Name</th><th>Means</th></tr>
+        </table></div>
+        <div class="ex"><h4>Example: reading hidden lines</h4><p>On the shock mount plate (Read a drawing tab), the side view shows the plate's edge as a thin rectangle. The holes go through the plate, so from the side you can't see them. They show up as pairs of dashed lines through the thickness, one pair per hole, with a center line between each pair.</p></div>
+        <div class="ex"><h4>Section views and hatching</h4><p>When hidden lines get confusing, the drafter "cuts" the part along a cutting-plane line and shows the cut face. Solid material that the saw went through gets <strong>hatching</strong>: thin diagonal lines. Holes and empty space stay blank. The counterbore figure in lesson 05 is a section view.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-lines" viewBox="0 0 520 240"></svg>
+        <p class="figcap">A block with a through hole, using every common line type at once.</p></div>
+      </div>
+    </article>
+
+    <!-- 5 -->
+    <article class="lesson" id="L-dims" data-title="Dimensions">
+      <div class="txt">
+        <div class="step"><b>05</b><h3>Dimensions and the symbols on them</h3></div>
+        <p>A dimension is built from thin lines. <strong>Extension lines</strong> come off the part (with a small gap so they don't look like part edges). A <strong>dimension line</strong> with arrowheads spans between them, and the <strong>value</strong> sits on it. A <strong>leader</strong> is a single line with an arrow that points to a feature, used for callouts like hole sizes.</p>
+        <p>ASME drawings use <strong>unidirectional</strong> dimensioning: every number reads from the bottom of the sheet, even on vertical dimension lines.</p>
+        <div class="tbl"><table>
+          <tr><th>Symbol</th><th>Meaning</th><th>Example</th><th>Read it as</th></tr>
+          <tr><td class="m">Ø</td><td>Diameter</td><td class="m">Ø10</td><td>A round feature 10 mm across</td></tr>
+          <tr><td class="m">R</td><td>Radius</td><td class="m">R5</td><td>A rounded corner or arc, 5 mm radius</td></tr>
+          <tr><td class="m">SØ / SR</td><td>Spherical diameter / radius</td><td class="m">SR12</td><td>A ball-shaped surface</td></tr>
+          <tr><td class="m">nX</td><td>Repeated features</td><td class="m">4X Ø6.6</td><td>Four identical holes, each Ø6.6</td></tr>
+          <tr><td class="m">THRU</td><td>Goes all the way through</td><td class="m">Ø6.6 THRU</td><td>A through hole</td></tr>
+          <tr><td><span class="sy" data-g="cbore"></span></td><td>Counterbore</td><td class="m">⌴ Ø11 ↧ 6.5</td><td>A flat-bottom bigger hole so a bolt head sits flush</td></tr>
+          <tr><td><span class="sy" data-g="csk"></span></td><td>Countersink</td><td class="m">⌵ Ø12 × 90°</td><td>A cone so a flat-head screw sits flush</td></tr>
+          <tr><td><span class="sy" data-g="depth"></span></td><td>Depth</td><td class="m">↧ 6.5</td><td>How deep a hole or counterbore goes</td></tr>
+          <tr><td class="m">(25)</td><td>Reference dimension</td><td class="m">(60)</td><td>Information only. Not inspected, no tolerance.</td></tr>
+          <tr><td><span class="m" style="border:1px solid currentColor;padding:0 4px">25</span></td><td>Basic dimension</td><td><span class="m" style="border:1px solid currentColor;padding:0 4px">40</span></td><td>Theoretically exact. Its tolerance lives in a GD&amp;T frame (lesson 10).</td></tr>
+          <tr><td class="m">1 × 45°</td><td>Chamfer</td><td class="m">2X 1 × 45°</td><td>Bevel 1 mm long at 45°, on two edges</td></tr>
+        </table></div>
+        <div class="ex"><h4>Worked example: a full hole callout</h4>
+          <p class="m">4X Ø6.6 THRU<br>⌴ Ø11 ↧ 6.5</p>
+          <p>Read left to right: four holes, each 6.6 mm diameter, going all the way through. Each one is counterbored to 11 mm diameter, 6.5 mm deep. That's the standard pocket for an M6 socket head cap screw: the 6.6 hole clears the 6 mm thread, and the head (10 mm across, 6 mm tall) drops into the counterbore and sits below the surface.</p>
+        </div>
+        <div class="ex warn"><h4>Common mistake: double dimensioning</h4><p>If a part is 120 long and made of sections 30 + 60 + 30, dimensioning all four with tolerances creates a conflict: the three pieces can add up to something the 120 tolerance doesn't allow. Leave one out, or mark it as reference: <span class="m">(60)</span>.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-dim" viewBox="0 0 520 230"></svg>
+        <ul class="marklist">
+          <li><i>1</i><span>Extension line: comes off the part, starts with a small gap</span></li>
+          <li><i>2</i><span>Dimension line with arrowheads</span></li>
+          <li><i>3</i><span>Value: reads from the bottom of the sheet</span></li>
+          <li><i>4</i><span>Leader: points at a feature for a callout</span></li>
+          <li><i>5</i><span>Center line: marks the hole's axis</span></li>
+        </ul></div>
+        <div class="figbox"><svg class="fig" id="fig-cbore" viewBox="0 0 520 260"></svg>
+        <p class="figcap">Section view through a counterbored hole, with the M6 screw it's made for shown in phantom lines. Hatching marks material the cutting plane went through.</p></div>
+      </div>
+    </article>
+
+    <!-- 6 -->
+    <article class="lesson" id="L-tol" data-title="Plus/minus tolerances">
+      <div class="txt">
+        <div class="step"><b>06</b><h3>Tolerances: how much variation is allowed</h3></div>
+        <p>A <strong>tolerance</strong> is the total amount a dimension may vary. There are four ways to write one. They all describe a range with an upper and lower limit.</p>
+        <div class="tbl"><table>
+          <tr><th>Style</th><th>Written</th><th>Smallest OK</th><th>Largest OK</th><th>Total tol.</th></tr>
+          <tr><td>Equal bilateral</td><td class="m">25 ±0.1</td><td class="m">24.9</td><td class="m">25.1</td><td class="m">0.2</td></tr>
+          <tr><td>Unequal bilateral</td><td class="m">25 +0.2/−0.1</td><td class="m">24.9</td><td class="m">25.2</td><td class="m">0.3</td></tr>
+          <tr><td>Unilateral</td><td class="m">25 +0.2/0</td><td class="m">25.0</td><td class="m">25.2</td><td class="m">0.2</td></tr>
+          <tr><td>Limit</td><td class="m">25.2 / 25.0</td><td class="m">25.0</td><td class="m">25.2</td><td class="m">0.2</td></tr>
+        </table></div>
+        <p><strong>General tolerances.</strong> Most dimensions on a drawing have no tolerance written next to them. They get the default from the title block, and the number of decimal places decides which default applies:</p>
+        <div class="tbl"><table>
+          <tr><th>Title block says</th><th>Dimension</th><th>Allowed range</th></tr>
+          <tr><td class="m">X ±0.5</td><td class="m">80</td><td class="m">79.5 – 80.5</td></tr>
+          <tr><td class="m">X.X ±0.2</td><td class="m">12.5</td><td class="m">12.3 – 12.7</td></tr>
+          <tr><td class="m">X.XX ±0.05</td><td class="m">6.35</td><td class="m">6.30 – 6.40</td></tr>
+          <tr><td class="m">ANGLES ±0.5°</td><td class="m">30°</td><td class="m">29.5° – 30.5°</td></tr>
+        </table></div>
+        <div class="try" id="tolTry">
+          <h4 style="margin:0">Try it: is the part good?</h4>
+          <div class="fields">
+            <label class="f">Dimension on drawing<select id="ttDim"></select></label>
+            <label class="f">You measured<input id="ttVal" type="number" step="0.001" value="25.12"></label>
+          </div>
+          <div id="ttOut"></div>
+        </div>
+        <div class="ex"><h4>Why not make everything tight?</h4><p>Tighter tolerances cost more, and the cost climbs steeply. As a rough guide: ±0.5 mm is easy on any machine, ±0.1 is routine CNC work, ±0.02 needs careful setups and good machines, and below ±0.01 you're usually grinding or honing. Make features tight only where function needs it, like a bearing bore, and leave everything else loose.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-tol" viewBox="0 0 520 200"></svg>
+        <p class="figcap">A 25 ±0.1 shaft. Any diameter in the green band passes. Each of these four measurements is checked against it.</p></div>
+        <div class="figbox"><svg class="fig" id="fig-stack" viewBox="0 0 520 200"></svg>
+        <p class="figcap">Tolerance stack-up: three 10 ±0.1 blocks stacked end to end. In the worst case, all three are at their limit together, so the stack is 30 ±0.3.</p></div>
+        <div class="ex"><h4>Stack-up example</h4><p>A spacer (10 ±0.1) sits between a bearing (12 ±0.05) and a nut face, inside a housing pocket 22.5 ±0.1 deep. Worst-case gap = pocket − parts. Largest gap: 22.6 − 9.9 − 11.95 = 0.75. Smallest gap: 22.4 − 10.1 − 12.05 = 0.25. If your design needs at least 0.3 of clearance, this stack-up fails and you need to tighten something.</p></div>
+      </div>
+    </article>
+
+    <!-- 7 -->
+    <article class="lesson" id="L-why" data-title="Why GD&amp;T exists">
+      <div class="txt">
+        <div class="step"><b>07</b><h3>Why plus/minus isn't enough</h3></div>
+        <p>Plus/minus tolerancing works well for sizes. It works badly for locations and shapes. Here are the three problems GD&amp;T was invented to fix.</p>
+        <p><strong>Problem 1: square zones.</strong> Locate a hole 20 ±0.1 from the left edge and 15 ±0.1 from the bottom. The hole's center can be anywhere in a 0.2 × 0.2 square. But a bolt doesn't care which direction the hole is off. It cares how far. The corners of that square are 0.141 from center and they pass, while a hole only 0.11 off straight to the right fails. That makes no functional sense.</p>
+        <p>GD&amp;T's position tolerance uses a round zone instead. A Ø0.283 circle passes through the square's corners and gives <strong>57% more usable area</strong> (0.0628 mm² versus 0.04 mm²) with no loss of function. More good parts, same assembly.</p>
+        <p><strong>Problem 2: measured from where?</strong> Real parts aren't perfectly square. If the left edge leans, "20 from the left edge" gives a different number at the top than at the bottom. Two inspectors get two answers. GD&amp;T fixes this with <strong>datums</strong> (lesson 09): you declare exactly which surfaces to measure from and in what order.</p>
+        <p><strong>Problem 3: shape isn't controlled.</strong> A ±0.1 thickness says nothing directly about whether a sealing face is flat, a bore is round, or a hole is square to its face. GD&amp;T has a specific symbol for each of those.</p>
+        <div class="ex"><h4>In one sentence</h4><p>GD&amp;T is a symbolic language that says where to measure from (datums), how shape and orientation are controlled (geometric tolerances), and how much variation each one gets, all in a form every inspector interprets the same way.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-square" viewBox="0 0 520 280"></svg>
+        <p class="figcap">Zone magnified about 700×. Point A is rejected by the square even though it's closer to true position than point B, which passes.</p></div>
+        <div class="figbox"><svg class="fig" id="fig-origin" viewBox="0 0 520 220"></svg>
+        <p class="figcap">An out-of-square part. Measured at the top, the hole is 20.0 from the edge. At the bottom, 17.1. Datums decide which one counts.</p></div>
+      </div>
+    </article>
+
+    <!-- 8 -->
+    <article class="lesson" id="L-fos" data-title="Features of size, MMC, LMC">
+      <div class="txt">
+        <div class="step"><b>08</b><h3>Features, features of size, MMC and LMC</h3></div>
+        <p>A <strong>feature</strong> is any physical surface on a part: a face, a hole wall, a chamfer.</p>
+        <p>A <strong>feature of size</strong> is a feature that has a size you can measure between opposing points: holes, pins, shafts, slots, tabs, the thickness of a plate. A flat face on its own isn't a feature of size, because there's nothing opposite it to measure to.</p>
+        <p>Every feature of size has two extremes:</p>
+        <ul>
+          <li><strong>MMC (maximum material condition)</strong>: the size where the part has the most material. Largest pin, smallest hole. The part is at its heaviest.</li>
+          <li><strong>LMC (least material condition)</strong>: the size where the part has the least material. Smallest pin, largest hole. The part is at its lightest.</li>
+        </ul>
+        <div class="tbl"><table>
+          <tr><th>Feature</th><th>Dimension</th><th>MMC</th><th>LMC</th></tr>
+          <tr><td>Hole</td><td class="m">Ø10.0 – 10.2</td><td class="m">10.0</td><td class="m">10.2</td></tr>
+          <tr><td>Pin</td><td class="m">Ø9.8 – 10.0</td><td class="m">10.0</td><td class="m">9.8</td></tr>
+          <tr><td>Slot (internal)</td><td class="m">6.0 – 6.1 wide</td><td class="m">6.0</td><td class="m">6.1</td></tr>
+          <tr><td>Tab (external)</td><td class="m">5.9 – 6.0 wide</td><td class="m">6.0</td><td class="m">5.9</td></tr>
+          <tr><td>Plate thickness</td><td class="m">10 ±0.1</td><td class="m">10.1</td><td class="m">9.9</td></tr>
+          <tr><td>Bearing bore</td><td class="m">Ø22.000 – 22.021</td><td class="m">22.000</td><td class="m">22.021</td></tr>
+        </table></div>
+        <div class="ex"><h4>Memory trick</h4><p>MMC = the heaviest version of the part. Ask "which size leaves more metal?" and you'll never get it backwards.</p></div>
+        <div class="ex"><h4>Why it matters</h4><p>Assembly is hardest at MMC: the biggest pin going into the smallest hole. That's the worst case for fit. When a hole is bigger than its MMC size, it has extra room, so its location can be a little worse and the bolt still fits. That extra allowance is <strong>bonus tolerance</strong>, and the Bonus calc tab lets you play with it.</p></div>
+        <div class="ex"><h4>Rule #1 (the envelope principle)</h4><p>Unless stated otherwise, a feature of size must not break a boundary of perfect form at MMC. A Ø10.0–10.2 pin that measures 10.2 everywhere must be perfectly straight. If it measures 10.1, it can bow up to 0.1. Size tolerance automatically limits form.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-mmc" viewBox="0 0 520 230"></svg>
+        <p class="figcap">Solid = MMC (most material), dashed = LMC (least material). For a hole, MMC is the small one. For a pin, it's the big one.</p></div>
+        <div class="figbox"><svg class="fig" id="fig-rule1" viewBox="0 0 520 170"></svg>
+        <p class="figcap">Rule #1 on a Ø10.0–10.2 pin. The dashed envelope is a perfect Ø10.2 cylinder. A pin at Ø10.1 can bow 0.1 and still fit inside it.</p></div>
+      </div>
+    </article>
+
+    <!-- 9 -->
+    <article class="lesson" id="L-datums" data-title="Datums">
+      <div class="txt">
+        <div class="step"><b>09</b><h3>Datums: where you measure from</h3></div>
+        <p>A <strong>datum</strong> is a theoretically perfect plane, axis, or point that measurements start from. The real surface on the part that establishes it is the <strong>datum feature</strong>. On the drawing, it's marked with a <strong>datum feature symbol</strong>: a filled triangle on the surface, connected to a box with a letter.</p>
+        <p>In the inspection room, datums are physical. The part is set onto precise fixtures (a granite surface plate, angle plates, pins) and those fixtures act as the perfect datums. Datums are used in order:</p>
+        <ul>
+          <li><strong>Primary (first letter)</strong>: the part rests on it, touching at a minimum of 3 points. Stops 3 degrees of freedom: up/down and two tilts.</li>
+          <li><strong>Secondary</strong>: the part is pushed against it, touching at 2 points. Stops 2 more: one slide and one spin.</li>
+          <li><strong>Tertiary</strong>: the part slides along until it touches at 1 point. Stops the last slide.</li>
+        </ul>
+        <p>This 3-2-1 setup locks all 6 degrees of freedom. Together, the three datum planes are the <strong>datum reference frame</strong>.</p>
+        <div class="ex"><h4>How designers choose datums</h4><p>Pick the surfaces that locate the part in the real assembly, in the order they make contact.</p>
+          <ul>
+            <li>Shock mount plate: the back face bolts flat against the frame tab, so it's <strong>A</strong>. Then one edge locates against a lip, so it's <strong>B</strong>. Another edge is <strong>C</strong>.</li>
+            <li>Shaft: it spins in two bearings, so the two bearing journals are the datums. Together they form one axis, called <strong>A-B</strong>.</li>
+            <li>Gearbox cover: the gasket face is <strong>A</strong>, and two dowel pin holes are <strong>B</strong> and <strong>C</strong>.</li>
+          </ul>
+        </div>
+        <div class="ex warn"><h4>Common mistake</h4><p>Choosing datums because they're easy to measure from, not because they match how the part mounts. Then a part can pass inspection and still not fit, because inspection didn't hold it the way the assembly does.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-drf" viewBox="0 0 520 300"></svg>
+        <p class="figcap">A part sitting in its datum reference frame. Red dots are the contact points: 3 on A, 2 on B, 1 on C.</p></div>
+        <div class="figbox"><svg class="fig" id="fig-dfs" viewBox="0 0 520 170"></svg>
+        <p class="figcap">Left: datum on a surface (a plane). Right: datum symbol in line with a diameter dimension, which makes the axis of that feature the datum.</p></div>
+      </div>
+    </article>
+
+    <!-- 10 -->
+    <article class="lesson" id="L-basic" data-title="Basic dimensions">
+      <div class="txt">
+        <div class="step"><b>10</b><h3>Basic dimensions and true position</h3></div>
+        <p>A <strong>basic dimension</strong> is shown in a box. It describes the exact, theoretically perfect location or shape of a feature. It has no tolerance of its own. Instead, the tolerance comes from a GD&amp;T frame attached to that feature.</p>
+        <p>The exact spot the basic dimensions point to is called <strong>true position</strong>. The position tolerance then says how far the real feature may wander from that spot.</p>
+        <div class="ex"><h4>Worked example</h4><p>Three holes are located by basic dimensions <span class="m">[20] [40] [40]</span> from datum B. Each has position tolerance <span class="m">Ø0.2</span> to A, B, C. That means each hole's center must fall inside its own Ø0.2 circle centered on a perfect spot. The spots are 20, 60, and 100 from B, exactly.</p>
+          <p>Notice the chained basic dimensions don't stack up. With plus/minus, three chained ±0.1 dimensions could put the last hole off by ±0.3. With basic dimensions, every hole gets the same Ø0.2, no matter how many are in the chain.</p>
+        </div>
+        <div class="ex warn"><h4>Common confusion</h4><p>"The box means it's exact, so the part must be exact." No. The box means the target is exact. The real part varies inside the zone in the feature control frame.</p></div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-basic" viewBox="0 0 520 260"></svg>
+        <p class="figcap">Boxed basic dimensions set exact targets. Green circles (magnified) show each hole's position zone.</p></div>
+      </div>
+    </article>
+
+    <!-- 11 -->
+    <article class="lesson" id="L-fcf" data-title="Feature control frames">
+      <div class="txt">
+        <div class="step"><b>11</b><h3>The feature control frame: GD&amp;T's sentence</h3></div>
+        <p>Every GD&amp;T requirement is written in a <strong>feature control frame</strong>: a row of boxes attached to a feature with a leader. Read it left to right like a sentence.</p>
+        <ol>
+          <li><strong>Symbol</strong>: which characteristic is controlled (position, flatness, and so on).</li>
+          <li><strong>Tolerance</strong>: the size of the zone. A <span class="m">Ø</span> in front means the zone is a cylinder. No <span class="m">Ø</span> means two parallel planes or lines.</li>
+          <li><strong>Modifier</strong> (optional): <span class="circ" style="width:18px;height:18px;font-size:11px">M</span> for MMC or <span class="circ" style="width:18px;height:18px;font-size:11px">L</span> for LMC. No modifier means RFS: the zone doesn't change with feature size.</li>
+          <li><strong>Datums</strong> (if needed): primary, secondary, tertiary, in that order.</li>
+        </ol>
+        <div class="ex"><h4>Read these out loud</h4>
+          <div id="fcfExamples"></div>
+        </div>
+        <div class="ex"><h4>The five families</h4>
+          <div class="tbl"><table>
+            <tr><th>Family</th><th>Symbols</th><th>Datum?</th><th>Controls</th></tr>
+            <tr><td>Form</td><td id="fam-form"></td><td>Never</td><td>Shape of one feature on its own</td></tr>
+            <tr><td>Orientation</td><td id="fam-orientation"></td><td>Always</td><td>Angle relative to a datum</td></tr>
+            <tr><td>Location</td><td id="fam-location"></td><td>Always</td><td>Where a feature is</td></tr>
+            <tr><td>Profile</td><td id="fam-profile"></td><td>Optional</td><td>Any shape, can also orient and locate</td></tr>
+            <tr><td>Runout</td><td id="fam-runout"></td><td>Always (an axis)</td><td>Wobble of a spinning part</td></tr>
+          </table></div>
+          <p>The <a href="#symbols" data-goto="symbols">Symbols</a> tab has an illustrated example of every one.</p>
+        </div>
+      </div>
+      <div>
+        <div class="figbox"><svg class="fig" id="fig-fcf" viewBox="0 0 520 220"></svg>
+        <p class="figcap">Anatomy of a feature control frame.</p></div>
+      </div>
+    </article>
+
+    <!-- 12 -->
+    <article class="lesson wide" id="L-gloss" data-title="Glossary">
+      <div class="txt">
+        <div class="step"><b>12</b><h3>Glossary</h3></div>
+        <p>Every term used on this site, in one place.</p>
+        <dl class="glossary" id="glossary"></dl>
+        <div class="row"><button class="btn" data-goto="drawings">Next: read a real drawing</button><button class="btn ghost" data-goto="quiz">Quiz me on the basics</button></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===================== DRAWINGS ===================== -->
+  <section class="panel" id="p-drawings" hidden>
+    <h2>Read a drawing, callout by callout</h2>
+    <p class="lede">Two complete drawings of real-style parts. Click any red numbered balloon (or the buttons under the drawing) to see what that callout says, what it means in plain English, how an inspector checks it, and why the designer put it there. The geometry it applies to lights up in red.</p>
+    <div class="dwg-pick" id="dwgPick"></div>
+    <div class="dwg-layout">
+      <div>
+        <div class="dwg-frame"><svg class="dwg" id="dwgSvg" viewBox="0 0 1000 700" role="img" aria-label="Engineering drawing"></svg></div>
+        <div class="clist" id="clist"></div>
+      </div>
+      <aside class="callout" id="callout" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <!-- ===================== SYMBOLS ===================== -->
+  <section class="panel" id="p-symbols" hidden>
+    <h2>The 14 geometric characteristic symbols</h2>
+    <p class="lede">Pick a symbol to see a drawing example, its tolerance zone, and real accept/reject cases. Dashed frames mark the two symbols removed in the 2018 standard that still show up on older drawings.</p>
+    <div class="filters" id="filters"></div>
+    <div class="sym-layout">
+      <div class="sym-grid" id="symGrid"></div>
+      <article class="detail" id="symDetail" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <!-- ===================== QUIZ ===================== -->
+  <section class="panel" id="p-quiz" hidden>
+    <h2>Quiz</h2>
+    <p class="lede">Ten questions per round. Pick a topic, or mix everything.</p>
+    <div class="filters" id="quizTopics"></div>
+    <div class="quiz-card" id="quiz"></div>
+  </section>
+
+  <!-- ===================== BONUS ===================== -->
+  <section class="panel" id="p-bonus" hidden>
+    <h2>Position and bonus tolerance</h2>
+    <p class="lede">Set up a hole or pin with a position callout, enter what the CMM measured, and see whether the part passes. The plot shows the tolerance zone around true position and where the measured axis landed. The defaults match the shock mount plate's bolt holes.</p>
+    <div class="calc">
+      <div class="box">
+        <div class="fields">
+          <div class="full">
+            <label class="f" for="featHole">Feature</label>
+            <div class="seg" id="featSeg"><button id="featHole" data-v="hole" aria-pressed="true">Hole (internal)</button><button id="featPin" data-v="pin" aria-pressed="false">Pin (external)</button></div>
+          </div>
+          <label class="f">Min size Ø<input id="cMin" type="number" step="0.01" value="6.60"></label>
+          <label class="f">Max size Ø<input id="cMax" type="number" step="0.01" value="6.80"></label>
+          <label class="f">Position tol Ø<input id="cTol" type="number" step="0.01" min="0" value="0.25"></label>
+          <label class="f">Modifier
+            <select id="cMod"><option value="M" selected>Ⓜ MMC</option><option value="R">RFS (none)</option><option value="L">Ⓛ LMC</option></select>
+          </label>
+          <label class="f full">Measured size Ø<input id="cAct" type="number" step="0.01" value="6.75"></label>
+          <label class="f">Measured ΔX<input id="cDx" type="number" step="0.01" value="0.12"></label>
+          <label class="f">Measured ΔY<input id="cDy" type="number" step="0.01" value="0.09"></label>
+        </div>
+        <dl class="results" id="cResults"></dl>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <h3>Tolerance zone</h3><span id="cVerdict"></span>
+        </div>
+        <svg class="zone-svg" id="zoneSvg" viewBox="0 0 300 300" role="img" aria-label="Position tolerance zone plot"></svg>
+        <div class="legend" style="justify-content:center;margin-top:6px"><span><i style="border-color:var(--muted);border-top-style:dashed"></i>Stated zone</span><span><i style="border-color:var(--ok)"></i>Zone with bonus</span><span><i style="border-color:var(--red)"></i>Measured axis</span></div>
+        <div class="work" id="cWork"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FCF ===================== -->
+  <section class="panel" id="p-fcf" hidden>
+    <h2>Feature control frame reader</h2>
+    <p class="lede">Build a frame cell by cell and get a plain-English reading. The checker flags callouts that are invalid per Y14.5, like a datum on a form control or MMC on runout.</p>
+    <div class="presets" id="presets"></div>
+    <div class="box">
+      <div class="fields" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+        <label class="f">Characteristic<select id="fSym"></select></label>
+        <label class="f">Zone shape<select id="fDia"><option value="0">Width (planes)</option><option value="1">Ø Diameter (cylinder)</option></select></label>
+        <label class="f">Tolerance<input id="fTol" type="number" step="0.01" min="0" value="0.10"></label>
+        <label class="f">Modifier<select id="fMod"><option value="">None (RFS)</option><option value="M">Ⓜ MMC</option><option value="L">Ⓛ LMC</option></select></label>
+        <label class="f">Primary<select id="fA"></select></label>
+        <label class="f">Secondary<select id="fB"></select></label>
+        <label class="f">Tertiary<select id="fC"></select></label>
+      </div>
+      <div class="fcf-wrap"><div class="fcf" id="fcfOut"></div></div>
+      <div class="reading" id="fRead"></div>
+      <ul class="issues" id="fIssues"></ul>
+    </div>
+  </section>
+
+  <p class="foot">Reference: ASME Y14.5-2018. Simplified for learning; example parts are illustrative. Check the standard or your company's drafting manual for edge cases.</p>
+</div>
