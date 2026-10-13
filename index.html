@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GD&amp;T Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a drawing sheet. Title-block header strip, zone tabs, redline accent for markup and errors. */
+:root {
+  --paper: #EEF2F5;
+  --sheet: #FFFFFF;
+  --ink: #142433;
+  --muted: #586979;
+  --line: #C3CED8;
+  --tint: #E4EBF1;
+  --red: #C1352D;
+  --red-soft: #F7E3E1;
+  --ok: #2B7A4B;
+  --ok-soft: #DFF0E5;
+  --display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0E161E; --sheet: #15202A; --ink: #DCE6EE; --muted: #8FA2B3; --line: #2B3A48;
+    --tint: #1B2834; --red: #FF6F62; --red-soft: #3A1E1D; --ok: #5DCB8C; --ok-soft: #173326;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0E161E; --sheet: #15202A; --ink: #DCE6EE; --muted: #8FA2B3; --line: #2B3A48;
+  --tint: #1B2834; --red: #FF6F62; --red-soft: #3A1E1D; --ok: #5DCB8C; --ok-soft: #173326;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; } [hidden] { display: none !important; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; }
+
+/* Title block */
+.tb { display: grid; grid-template-columns: 1fr auto; border: 1.5px solid var(--ink); background: var(--sheet); }
+.tb-name { padding: 14px 18px; border-right: 1.5px solid var(--ink); min-width: 0; }
+.tb-name h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 6vw, 46px); line-height: 1; margin: 0; letter-spacing: .01em; text-wrap: balance; }
+.tb-name p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.tb-meta { display: grid; grid-template-columns: auto auto; font-family: var(--mono); font-size: 12px; }
+.tb-meta div { padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.tb-meta div:nth-child(odd) { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; border-right: 1px solid var(--line); }
+.tb-meta div:nth-last-child(-n+2) { border-bottom: 0; }
+@media (max-width: 640px) {
+  .tb { grid-template-columns: 1fr; }
+  .tb-name { border-right: 0; border-bottom: 1.5px solid var(--ink); }
+}
+
+/* Tabs */
+nav.tabs { display: flex; flex-wrap: wrap; gap: 0; margin-top: 18px; border-bottom: 1.5px solid var(--ink); }
+nav.tabs button { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; background: none; border: 0; color: var(--muted); padding: 8px 16px 6px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+nav.tabs button span { font-family: var(--mono); font-size: 11px; margin-right: 6px; color: var(--muted); }
+nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--red); }
+nav.tabs button:hover { color: var(--ink); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+section.panel { padding-top: 22px; }
+.lede { color: var(--muted); max-width: 68ch; margin: 0 0 18px; }
+h2 { font-family: var(--display); font-size: 26px; font-weight: 600; margin: 0 0 4px; letter-spacing: .01em; }
+h3 { font-family: var(--display); font-size: 20px; font-weight: 600; margin: 0; }
+
+/* Symbols */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; padding: 5px 10px; border: 1px solid var(--line); background: var(--sheet); color: var(--muted); cursor: pointer; border-radius: 2px; }
+.chip[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); background: var(--tint); }
+.sym-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 18px; align-items: start; }
+@media (max-width: 760px) { .sym-layout { grid-template-columns: 1fr; } }
+.sym-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 8px; }
+.sym-btn { display: grid; justify-items: center; gap: 6px; padding: 12px 6px 10px; background: var(--sheet); border: 1px solid var(--line); color: var(--ink); cursor: pointer; text-align: center; font-family: var(--body); font-size: 12.5px; line-height: 1.25; border-radius: 2px; }
+.sym-btn:hover { border-color: var(--muted); }
+.sym-btn[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 -3px 0 var(--red); }
+.sym-btn .glyph { width: 40px; height: 40px; display: grid; place-items: center; border: 1.5px solid var(--ink); }
+.sym-btn.removed .glyph { border-style: dashed; }
+.detail { background: var(--sheet); border: 1.5px solid var(--ink); padding: 18px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.detail-head { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+.detail-head .glyph { width: 64px; height: 64px; flex: none; display: grid; place-items: center; border: 2px solid var(--ink); }
+.cat { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+dl.facts { display: grid; grid-template-columns: auto 1fr; gap: 0; margin: 0 0 14px; border-top: 1px solid var(--line); }
+dl.facts dt, dl.facts dd { padding: 7px 0; border-bottom: 1px solid var(--line); margin: 0; }
+dl.facts dt { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding-right: 16px; padding-top: 9px; }
+.detail p { margin: 0 0 10px; max-width: 62ch; }
+.note { font-size: 13.5px; background: var(--red-soft); border-left: 3px solid var(--red); padding: 8px 12px; }
+.tag-required { color: var(--red); font-weight: 600; }
+
+/* Quiz */
+.quiz-card { background: var(--sheet); border: 1.5px solid var(--ink); padding: 20px; max-width: 720px; }
+.quiz-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.progress { height: 3px; background: var(--tint); margin-bottom: 18px; }
+.progress i { display: block; height: 100%; background: var(--red); transition: width .25s; }
+.q-glyph { width: 84px; height: 84px; display: grid; place-items: center; border: 2px solid var(--ink); margin-bottom: 14px; }
+.q-prompt { font-size: 17px; font-weight: 500; margin: 0 0 16px; max-width: 60ch; }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; font: inherit; padding: 10px 14px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); cursor: pointer; border-radius: 2px; display: flex; gap: 10px; align-items: baseline; }
+.opt b { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.opt:hover:not(:disabled) { border-color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt.right { background: var(--ok-soft); border-color: var(--ok); }
+.opt.wrong { background: var(--red-soft); border-color: var(--red); }
+.explain { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--ok); background: var(--tint); font-size: 14px; }
+.explain.bad { border-left-color: var(--red); }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.btn { font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 8px 18px; background: var(--ink); color: var(--sheet); border: 1.5px solid var(--ink); cursor: pointer; border-radius: 2px; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.score-big { font-family: var(--display); font-size: 64px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* Calculator */
+.calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 760px) { .calc { grid-template-columns: 1fr; } }
+.box { background: var(--sheet); border: 1.5px solid var(--ink); padding: 18px; min-width: 0; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+.fields .full { grid-column: 1 / -1; }
+label.f { display: grid; gap: 4px; font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+label.f input, label.f select { font-family: var(--mono); font-size: 15px; padding: 7px 9px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 2px; width: 100%; min-width: 0; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.seg button { flex: 1; font-family: var(--mono); font-size: 13px; padding: 7px 4px; border: 0; background: var(--paper); color: var(--muted); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+.results { display: grid; grid-template-columns: auto 1fr; margin: 14px 0 0; font-variant-numeric: tabular-nums; }
+.results dt, .results dd { margin: 0; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.results dt { color: var(--muted); padding-right: 14px; font-size: 13.5px; }
+.results dd { font-family: var(--mono); text-align: right; }
+.verdict { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: .06em; padding: 3px 14px; border: 2px solid currentColor; }
+.verdict.pass { color: var(--ok); }
+.verdict.fail { color: var(--red); }
+.zone-svg { width: 100%; max-width: 360px; height: auto; display: block; margin: 0 auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--muted); justify-content: center; margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 6px; }
+.work { font-family: var(--mono); font-size: 13px; background: var(--tint); padding: 10px 12px; margin-top: 14px; overflow-x: auto; white-space: pre; line-height: 1.6; }
+
+/* FCF */
+.fcf-wrap { overflow-x: auto; padding: 18px 0; }
+.fcf { display: inline-flex; border: 2px solid var(--ink); font-family: var(--mono); font-size: 22px; background: var(--sheet); }
+.fcf > div { padding: 6px 14px; display: flex; align-items: center; gap: 4px; min-height: 48px; white-space: nowrap; }
+.fcf > div + div { border-left: 2px solid var(--ink); }
+.fcf .g { width: 30px; height: 30px; }
+.circ { display: inline-grid; place-items: center; width: 22px; height: 22px; border: 1.6px solid var(--ink); border-radius: 50%; font-size: 13px; font-weight: 600; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.issues { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.issues li { padding: 8px 12px; font-size: 14px; border-left: 3px solid var(--red); background: var(--red-soft); }
+.issues li.ok { border-left-color: var(--ok); background: var(--ok-soft); }
+.reading p { margin: 0 0 10px; max-width: 66ch; }
+.foot { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="tb">
+    <div class="tb-name">
+      <h1>GD&amp;T Trainer</h1>
+      <p>Learn the 14 symbols, drill them, run bonus tolerance math, and read feature control frames.</p>
+    </div>
+    <div class="tb-meta">
+      <div>Std</div><div>ASME Y14.5-2018</div>
+      <div>Units</div><div>mm</div>
+      <div>Sheet</div><div id="sheetNo">1 of 4</div>
+      <div>Rev</div><div>A</div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="t-symbols" data-tab="symbols" aria-selected="true"><span>A</span>Symbols</button>
+    <button role="tab" id="t-quiz" data-tab="quiz" aria-selected="false"><span>B</span>Quiz</button>
+    <button role="tab" id="t-bonus" data-tab="bonus" aria-selected="false"><span>C</span>Bonus calc</button>
+    <button role="tab" id="t-fcf" data-tab="fcf" aria-selected="false"><span>D</span>Frame reader</button>
+  </nav>
+
+  <!-- SYMBOLS -->
+  <section class="panel" id="p-symbols">
+    <h2>Geometric characteristic symbols</h2>
+    <p class="lede">Pick a symbol to see what it controls, whether it needs a datum, and what its tolerance zone looks like. Dashed frames mark symbols that were removed in the 2018 standard but still show up on older drawings.</p>
+    <div class="filters" id="filters"></div>
+    <div class="sym-layout">
+      <div class="sym-grid" id="symGrid"></div>
+      <article class="detail" id="symDetail" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="panel" id="p-quiz" hidden>
+    <h2>Quiz</h2>
+    <p class="lede">Ten questions per round, mixing symbol recognition with the concepts interviewers ask about: MMC, bonus tolerance, datums, Rule #1.</p>
+    <div class="quiz-card" id="quiz"></div>
+  </section>
+
+  <!-- BONUS -->
+  <section class="panel" id="p-bonus" hidden>
+    <h2>Position and bonus tolerance</h2>
+    <p class="lede">Set up a hole or pin with a position callout, enter what the CMM measured, and see whether the part passes. The plot shows the tolerance zone around true position and where the measured axis landed.</p>
+    <div class="calc">
+      <div class="box">
+        <div class="fields">
+          <div class="full">
+            <label class="f" for="featHole">Feature</label>
+            <div class="seg" id="featSeg"><button id="featHole" data-v="hole" aria-pressed="true">Hole (internal)</button><button id="featPin" data-v="pin" aria-pressed="false">Pin (external)</button></div>
+          </div>
+          <label class="f">Min size Ø<input id="cMin" type="number" step="0.01" value="10.00"></label>
+          <label class="f">Max size Ø<input id="cMax" type="number" step="0.01" value="10.20"></label>
+          <label class="f">Position tol Ø<input id="cTol" type="number" step="0.01" min="0" value="0.10"></label>
+          <label class="f">Modifier
+            <select id="cMod"><option value="M" selected>Ⓜ MMC</option><option value="R">RFS (none)</option><option value="L">Ⓛ LMC</option></select>
+          </label>
+          <label class="f full">Measured size Ø<input id="cAct" type="number" step="0.01" value="10.15"></label>
+          <label class="f">Measured ΔX<input id="cDx" type="number" step="0.01" value="0.06"></label>
+          <label class="f">Measured ΔY<input id="cDy" type="number" step="0.01" value="0.08"></label>
+        </div>
+        <dl class="results" id="cResults"></dl>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <h3>Tolerance zone</h3><span id="cVerdict"></span>
+        </div>
+        <svg class="zone-svg" id="zoneSvg" viewBox="0 0 300 300" role="img" aria-label="Position tolerance zone plot"></svg>
+        <div class="legend"><span><i style="border-color:var(--muted);border-top-style:dashed"></i>Stated zone</span><span><i style="border-color:var(--ok)"></i>Zone with bonus</span><span><i style="border-color:var(--red)"></i>Measured axis</span></div>
+        <div class="work" id="cWork"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FCF -->
+  <section class="panel" id="p-fcf" hidden>
+    <h2>Feature control frame reader</h2>
+    <p class="lede">Build a frame cell by cell and get a plain-English reading. The checker flags callouts that are invalid per Y14.5, like a datum on a form control or MMC on runout.</p>
+    <div class="presets" id="presets"></div>
+    <div class="box">
+      <div class="fields" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+        <label class="f">Characteristic<select id="fSym"></select></label>
+        <label class="f">Zone shape<select id="fDia"><option value="0">Width (planes)</option><option value="1">Ø Diameter (cylinder)</option></select></label>
+        <label class="f">Tolerance<input id="fTol" type="number" step="0.01" min="0" value="0.10"></label>
+        <label class="f">Modifier<select id="fMod"><option value="">None (RFS)</option><option value="M">Ⓜ MMC</option><option value="L">Ⓛ LMC</option></select></label>
+        <label class="f">Primary<select id="fA"></select></label>
+        <label class="f">Secondary<select id="fB"></select></label>
+        <label class="f">Tertiary<select id="fC"></select></label>
+      </div>
+      <div class="fcf-wrap"><div class="fcf" id="fcfOut"></div></div>
+      <div class="reading" id="fRead"></div>
+      <ul class="issues" id="fIssues"></ul>
+    </div>
+  </section>
+
+  <p class="foot">Reference: ASME Y14.5-2018. Simplified for learning. Check the standard or your company's drafting manual for edge cases.</p>
+</div>
+
+<script>
+(function () {
+  // ---------- Symbol glyphs (24x24) ----------
+  var G = {
+    straightness: '<path d="M3 12H21"/>',
+    flatness: '<path d="M8 7.5H21L16 16.5H3Z"/>',
+    circularity: '<circle cx="12" cy="12" r="7.5"/>',
+    cylindricity: '<circle cx="12" cy="12" r="5.5"/><path d="M3.3 17.4L10.2 3.6M13.8 20.4L20.7 6.6"/>',
+    profileLine: '<path d="M3 17A9 9 0 0 1 21 17"/>',
+    profileSurface: '<path d="M3 17A9 9 0 0 1 21 17Z"/>',
+    angularity: '<path d="M3.5 19H20.5M3.5 19L16.5 6"/>',
+    perpendicularity: '<path d="M3.5 19.5H20.5M12 19.5V4"/>',
+    parallelism: '<path d="M4.5 19.5L11 4.5M13 19.5L19.5 4.5"/>',
+    position: '<circle cx="12" cy="12" r="6"/><path d="M12 2.5V21.5M2.5 12H21.5"/>',
+    concentricity: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.2"/>',
+    symmetry: '<path d="M2.5 12H21.5M6 7H18M6 17H18"/>',
+    circularRunout: '<path d="M6 19.5L16 7.5"/><path d="M18.5 4.5L12.6 7.2L16.6 10.6Z" fill="currentColor"/>',
+    totalRunout: '<path d="M3 20H12M4 20L11 9.5M11.5 20L18.5 9.5"/><path d="M12.6 6.5L8.6 9.2L11.9 11.4Z M20.1 6.5L16.1 9.2L19.4 11.4Z" fill="currentColor"/>'
+  };
+  function glyph(id, px) {
+    return '<svg width="' + px + '" height="' + px + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">' + G[id] + '</svg>';
+  }
+
+  // ---------- Symbol data ----------
+  var CATS = { form: "Form", profile: "Profile", orientation: "Orientation", location: "Location", runout: "Runout" };
+  var S = [
+    { id: "straightness", name: "Straightness", cat: "form", datum: "never", mod: "Only when applied to a feature of size (derived median line)", dia: "Only for an axis",
+      zone: "Surface element: two parallel lines in each cross-section. Axis (derived median line): a cylinder.",
+      what: "Controls how straight a line element of a surface is, or how straight the axis of a pin or shaft is.",
+      ex: "A long shaft or linear rail where bow along the length matters." },
+    { id: "flatness", name: "Flatness", cat: "form", datum: "never", mod: "Only for derived median plane (2018)", dia: "No",
+      zone: "Two parallel planes the full surface must lie between.",
+      what: "Controls how flat a single surface is. No orientation or location relative to anything else.",
+      ex: "A sealing face or a mounting pad that sits on another part." },
+    { id: "circularity", name: "Circularity (roundness)", cat: "form", datum: "never", mod: "No", dia: "No",
+      zone: "Two concentric circles, checked independently at each cross-section.",
+      what: "Controls how round each cross-section is. Each slice is judged on its own, so taper and bend are not controlled.",
+      ex: "A bearing journal or an O-ring groove diameter." },
+    { id: "cylindricity", name: "Cylindricity", cat: "form", datum: "never", mod: "No", dia: "No",
+      zone: "Two coaxial cylinders the whole surface must lie between, all at once.",
+      what: "Combines circularity, straightness, and taper into one control over the entire cylindrical surface.",
+      ex: "A hydraulic piston bore or a precision shaft for a press fit." },
+    { id: "profileLine", name: "Profile of a line", cat: "profile", datum: "optional", mod: "No (the datum references can carry modifiers)", dia: "No",
+      zone: "Two curves offset from the true profile, checked at each cross-section.",
+      what: "Controls a 2D cross-section of a surface against its basic (true) profile. Without datums it controls form only.",
+      ex: "An airfoil section or an extrusion profile." },
+    { id: "profileSurface", name: "Profile of a surface", cat: "profile", datum: "optional", mod: "No (the datum references can carry modifiers)", dia: "No",
+      zone: "Two surfaces offset from the true profile (equal split by default, or unequal with the Ⓤ modifier).",
+      what: "The most versatile control. With datums it controls size, form, orientation, and location of a surface at once. Very common on castings, sheet metal, and machined complex surfaces.",
+      ex: "The outer surface of a cast suspension upright, or any curved surface defined in CAD." },
+    { id: "angularity", name: "Angularity", cat: "orientation", datum: "required", mod: "Yes, when applied to a feature of size", dia: "Only for an axis",
+      zone: "Two parallel planes at the basic angle to the datum. For an axis, a cylinder at that angle.",
+      what: "Controls orientation at any angle other than 0° or 90°. The angle itself is a basic dimension.",
+      ex: "A chamfered mounting face or an angled hole for a shock mount bolt." },
+    { id: "perpendicularity", name: "Perpendicularity", cat: "orientation", datum: "required", mod: "Yes, when applied to a feature of size", dia: "Only for an axis",
+      zone: "Two parallel planes at 90° to the datum. For an axis, a cylinder at 90° (use Ø).",
+      what: "Controls how square a surface or axis is to a datum. Orientation only, not location.",
+      ex: "A bore that must be square to its mounting face, like a bearing seat in a hub." },
+    { id: "parallelism", name: "Parallelism", cat: "orientation", datum: "required", mod: "Yes, when applied to a feature of size", dia: "Only for an axis",
+      zone: "Two planes parallel to the datum. For an axis, a cylinder parallel to it.",
+      what: "Controls orientation at 0° to a datum. Also limits flatness of that surface, since the surface must fit in the zone.",
+      ex: "The top and bottom faces of a spacer or the two rails of a slide." },
+    { id: "position", name: "Position", cat: "location", datum: "required", mod: "Yes: MMC, LMC, or RFS", dia: "Yes, for holes and pins",
+      zone: "Usually a cylinder centered at true position, located by basic dimensions from the datums.",
+      what: "Locates features of size (holes, pins, slots, tabs). The most-used control on real drawings, and where bonus tolerance comes in.",
+      ex: "A bolt pattern on a bracket so it lines up with the mating part." },
+    { id: "concentricity", name: "Concentricity", cat: "location", datum: "required", mod: "No (RFS only)", dia: "Yes", removed: true,
+      zone: "A cylinder about the datum axis that all derived median points must lie within.",
+      what: "Controls the median points of a feature relative to a datum axis. Very hard to inspect, which is why it was removed.",
+      ex: "On older drawings. Use runout, position, or profile instead." },
+    { id: "symmetry", name: "Symmetry", cat: "location", datum: "required", mod: "No (RFS only)", dia: "No", removed: true,
+      zone: "Two parallel planes centered on the datum center plane that all median points must lie within.",
+      what: "The planar version of concentricity. Removed for the same reason.",
+      ex: "On older drawings. Use position or profile instead." },
+    { id: "circularRunout", name: "Circular runout", cat: "runout", datum: "required", mod: "No (RFS only)", dia: "No",
+      zone: "Full indicator movement at each circular element as the part rotates 360° on the datum axis.",
+      what: "Checked with a dial indicator at one location at a time while spinning the part. Catches roundness and wobble at each element.",
+      ex: "A brake rotor face or a pulley diameter relative to its bore." },
+    { id: "totalRunout", name: "Total runout", cat: "runout", datum: "required", mod: "No (RFS only)", dia: "No",
+      zone: "Full indicator movement over the entire surface as the part rotates and the indicator traverses the length.",
+      what: "Stricter than circular runout. Controls the whole surface at once: roundness, straightness, taper, and coaxiality together.",
+      ex: "A high-speed shaft where the whole length must spin true." }
+  ];
+  var byId = {}; S.forEach(function (s) { byId[s.id] = s; });
+
+  // ---------- Storage (safe) ----------
+  function sGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function sSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // ---------- Tabs ----------
+  var tabs = ["symbols", "quiz", "bonus", "fcf"];
+  function showTab(t) {
+    if (tabs.indexOf(t) < 0) t = "symbols";
+    tabs.forEach(function (x, i) {
+      document.getElementById("p-" + x).hidden = x !== t;
+      document.getElementById("t-" + x).setAttribute("aria-selected", x === t ? "true" : "false");
+      if (x === t) document.getElementById("sheetNo").textContent = (i + 1) + " of 4";
+    });
+    sSet("gdt-tab", t);
+  }
+  document.querySelectorAll("nav.tabs button").forEach(function (b) {
+    b.addEventListener("click", function () { showTab(b.dataset.tab); try { history.replaceState(null, "", "#" + b.dataset.tab); } catch (e) {} });
+  });
+
+  // ---------- Symbols tab ----------
+  var activeCat = "all", activeSym = "position";
+  var filters = document.getElementById("filters");
+  [["all", "All 14"]].concat(Object.keys(CATS).map(function (k) { return [k, CATS[k]]; })).forEach(function (f) {
+    var b = document.createElement("button");
+    b.className = "chip"; b.textContent = f[1]; b.dataset.cat = f[0];
+    b.setAttribute("aria-pressed", f[0] === "all" ? "true" : "false");
+    b.addEventListener("click", function () {
+      activeCat = f[0];
+      filters.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.dataset.cat === activeCat ? "true" : "false"); });
+      renderGrid();
+    });
+    filters.appendChild(b);
+  });
+  function renderGrid() {
+    var g = document.getElementById("symGrid"); g.innerHTML = "";
+    S.filter(function (s) { return activeCat === "all" || s.cat === activeCat; }).forEach(function (s) {
+      var b = document.createElement("button");
+      b.className = "sym-btn" + (s.removed ? " removed" : "");
+      b.setAttribute("aria-pressed", s.id === activeSym ? "true" : "false");
+      b.innerHTML = '<span class="glyph">' + glyph(s.id, 28) + '</span><span>' + s.name.replace(" (roundness)", "") + '</span>';
+      b.addEventListener("click", function () { activeSym = s.id; renderGrid(); renderDetail(); });
+      g.appendChild(b);
+    });
+  }
+  function renderDetail() {
+    var s = byId[activeSym];
+    var datum = s.datum === "never" ? "Never. Form controls stand alone." : s.datum === "required" ? '<span class="tag-required">Required</span>' : "Optional. Without datums it controls form only.";
+    document.getElementById("symDetail").innerHTML =
+      '<div class="detail-head"><span class="glyph">' + glyph(s.id, 44) + '</span><div><div class="cat">' + CATS[s.cat] + ' control</div><h3 style="font-size:26px">' + s.name + '</h3></div></div>' +
+      '<p>' + s.what + '</p>' +
+      '<dl class="facts"><dt>Datum</dt><dd>' + datum + '</dd><dt>Ⓜ / Ⓛ</dt><dd>' + s.mod + '</dd><dt>Ø zone</dt><dd>' + s.dia + '</dd><dt>Zone</dt><dd>' + s.zone + '</dd><dt>Example</dt><dd>' + s.ex + '</dd></dl>' +
+      (s.removed ? '<p class="note">Removed in ASME Y14.5-2018. Still worth recognizing on legacy drawings.</p>' : '');
+  }
+  renderGrid(); renderDetail();
+
+  // ---------- Quiz ----------
+  var CONCEPTS = [
+    { q: "A hole is dimensioned Ø10.0–10.2 with position Ø0.1 Ⓜ. It measures Ø10.15. How much position tolerance is allowed?", a: "Ø0.25", w: ["Ø0.10", "Ø0.15", "Ø0.30"],
+      e: "MMC of a hole is its smallest size, 10.0. Bonus = 10.15 − 10.0 = 0.15. Total = 0.1 + 0.15 = Ø0.25." },
+    { q: "What is the MMC size of a pin dimensioned Ø8.0–8.1?", a: "Ø8.1", w: ["Ø8.0", "Ø8.05", "Depends on the datum"],
+      e: "Maximum material condition is when the part has the most material. For an external feature like a pin, that's the largest size." },
+    { q: "What is the MMC size of a hole dimensioned Ø6.0–6.2?", a: "Ø6.0", w: ["Ø6.2", "Ø6.1", "There is no MMC for holes"],
+      e: "For an internal feature, the most material is left in the part when the hole is smallest." },
+    { q: "Which group of controls never references a datum?", a: "Form: flatness, straightness, circularity, cylindricity", w: ["Orientation: parallelism, perpendicularity, angularity", "Runout: circular and total", "Location: position"],
+      e: "Form controls compare a feature to a perfect version of itself, so there's nothing to reference." },
+    { q: "What does Rule #1 (the envelope principle) say?", a: "A feature of size can't extend past a boundary of perfect form at MMC", w: ["All tolerances apply RFS unless stated", "Datums must be 3-2-1", "Basic dimensions have zero tolerance"],
+      e: "Rule #1 means size tolerance also limits form. A Ø10.0–10.2 pin at Ø10.2 everywhere must be perfectly straight." },
+    { q: "A plate is 10 ± 0.1 thick. Someone adds a flatness callout of 0.3 to the top face. What's wrong?", a: "Rule #1 already limits flatness to 0.2, so 0.3 does nothing", w: ["Flatness needs a datum", "Flatness must use Ø", "Nothing, it's fine"],
+      e: "The size tolerance is 0.2 total, and Rule #1 already holds form within that. A flatness callout is only useful as a refinement smaller than 0.2." },
+    { q: "A hole's measured center is offset ΔX = 0.03, ΔY = 0.04 from true position. What's its actual position (diametral)?", a: "Ø0.10", w: ["Ø0.05", "Ø0.07", "Ø0.14"],
+      e: "Radial offset = √(0.03² + 0.04²) = 0.05. Position zones are diameters, so double it: Ø0.10." },
+    { q: "How many points of contact does each datum establish in a 3-2-1 setup?", a: "Primary 3, secondary 2, tertiary 1", w: ["Primary 1, secondary 2, tertiary 3", "All three need 3", "Primary 3, secondary 3, tertiary 3"],
+      e: "Three points define the primary plane, two locate the secondary, and one stops the last degree of freedom. Together they constrain all six DOF." },
+    { q: "How is a basic dimension shown on a drawing?", a: "Enclosed in a rectangle, with no tolerance", w: ["In parentheses", "Underlined", "With a ± after it"],
+      e: "Basic dimensions define the theoretically exact location or shape. The tolerance comes from the feature control frame. Parentheses mean a reference dimension." },
+    { q: "What's the difference between circular and total runout?", a: "Circular checks each circular element on its own; total checks the whole surface at once", w: ["Circular needs a datum, total doesn't", "Total runout only applies to faces", "There is no difference"],
+      e: "With total runout the indicator traverses the full length while the part spins, so taper and straightness errors show up too." },
+    { q: "Which two symbols were removed in ASME Y14.5-2018?", a: "Concentricity and symmetry", w: ["Circularity and cylindricity", "Profile of a line and angularity", "Circular and total runout"],
+      e: "Both require finding median points, which is hard to inspect. Position, runout, or profile now cover those cases." },
+    { q: "Hole Ø10.0–10.2 with position Ø0.1 Ⓜ. What size gauge pin checks it (the virtual condition)?", a: "Ø9.9", w: ["Ø10.0", "Ø10.1", "Ø10.3"],
+      e: "Virtual condition for a hole at MMC = MMC − geometric tolerance = 10.0 − 0.1 = 9.9. A fixed Ø9.9 pin at true position must fit every good hole." },
+    { q: "What does RFS (regardless of feature size) mean for a position callout?", a: "No bonus tolerance; the stated tolerance applies at any size", w: ["Bonus tolerance applies automatically", "Size isn't inspected", "The datum can shift"],
+      e: "RFS is the default per Rule #2 when no modifier is shown. The zone stays the same no matter how big or small the feature is." },
+    { q: "A surface has parallelism 0.05 to datum A. What else does that control on that surface?", a: "Its flatness, to within 0.05", w: ["Its location", "Its perpendicularity to B", "Nothing else"],
+      e: "The whole surface must fit between two planes 0.05 apart, so it can't be less flat than that. Orientation controls also refine form." },
+    { q: "Circularity vs. cylindricity: what does cylindricity control that circularity doesn't?", a: "Taper and straightness along the length", w: ["Location relative to a datum", "Roundness of each slice", "Surface finish"],
+      e: "Circularity checks each cross-section independently. Cylindricity puts the entire surface between two coaxial cylinders." },
+    { q: "Which control can control size, form, orientation, and location of a non-cylindrical surface at once?", a: "Profile of a surface", w: ["Position", "Flatness", "Total runout"],
+      e: "Profile with a full datum reference frame locates and shapes the surface in one callout. That's why it's everywhere on castings and sheet metal." }
+  ];
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var quiz = { qs: [], i: 0, score: 0, answered: false };
+  function buildRound() {
+    var symQs = shuffle(S).slice(0, 5).map(function (s) {
+      var wrong = shuffle(S.filter(function (x) { return x.id !== s.id; })).slice(0, 3).map(function (x) { return x.name; });
+      return { glyph: s.id, q: "Which characteristic is this symbol?", a: s.name, w: wrong, e: s.name + " (" + CATS[s.cat].toLowerCase() + "). " + s.what };
+    });
+    var conQs = shuffle(CONCEPTS).slice(0, 5);
+    quiz.qs = shuffle(symQs.concat(conQs)).map(function (q) { q.opts = shuffle([q.a].concat(q.w)); return q; });
+    quiz.i = 0; quiz.score = 0; quiz.answered = false;
+    renderQ();
+  }
+  function renderQ() {
+    var el = document.getElementById("quiz");
+    var best = sGet("gdt-best");
+    if (quiz.i >= quiz.qs.length) {
+      var n = quiz.qs.length;
+      if (!best || quiz.score > +best) { sSet("gdt-best", quiz.score); best = quiz.score; }
+      el.innerHTML = '<div class="quiz-top"><span>Round complete</span><span>Best: ' + best + ' / ' + n + '</span></div>' +
+        '<div class="score-big">' + quiz.score + ' / ' + n + '</div>' +
+        '<p style="color:var(--muted);margin:8px 0 0">' + (quiz.score === n ? "Clean sheet." : quiz.score >= 7 ? "Solid. Run another round to hit the ones you missed." : "Look over the Symbols tab, then try again.") + '</p>' +
+        '<div class="row"><button class="btn" id="qAgain">New round</button></div>';
+      document.getElementById("qAgain").addEventListener("click", buildRound);
+      return;
+    }
+    var q = quiz.qs[quiz.i];
+    el.innerHTML = '<div class="quiz-top"><span>Question ' + (quiz.i + 1) + ' of ' + quiz.qs.length + '</span><span>Score ' + quiz.score + (best ? ' · Best ' + best : '') + '</span></div>' +
+      '<div class="progress"><i style="width:' + (quiz.i / quiz.qs.length * 100) + '%"></i></div>' +
+      (q.glyph ? '<div class="q-glyph">' + glyph(q.glyph, 56) + '</div>' : '') +
+      '<p class="q-prompt">' + q.q + '</p><div class="opts" id="qOpts"></div><div id="qMore"></div>';
+    var opts = document.getElementById("qOpts");
+    q.opts.forEach(function (o, k) {
+      var b = document.createElement("button");
+      b.className = "opt"; b.innerHTML = "<b>" + "ABCD"[k] + "</b><span></span>";
+      b.querySelector("span").textContent = o;
+      b.addEventListener("click", function () { answer(b, o); });
+      opts.appendChild(b);
+    });
+  }
+  function answer(btn, o) {
+    if (quiz.answered) return;
+    quiz.answered = true;
+    var q = quiz.qs[quiz.i], ok = o === q.a;
+    if (ok) quiz.score++;
+    document.querySelectorAll("#qOpts .opt").forEach(function (b) {
+      b.disabled = true;
+      if (b.querySelector("span").textContent === q.a) b.classList.add("right");
+    });
+    if (!ok) btn.classList.add("wrong");
+    var more = document.getElementById("qMore");
+    more.innerHTML = '<div class="explain' + (ok ? '' : ' bad') + '"><strong>' + (ok ? "Correct. " : "Not quite. ") + '</strong></div>' +
+      '<div class="row"><button class="btn" id="qNext">' + (quiz.i === quiz.qs.length - 1 ? "See score" : "Next") + '</button></div>';
+    more.querySelector(".explain").appendChild(document.createTextNode(q.e));
+    var nx = document.getElementById("qNext");
+    nx.addEventListener("click", function () { quiz.i++; quiz.answered = false; renderQ(); });
+    nx.focus();
+  }
+  buildRound();
+
+  // ---------- Bonus calculator ----------
+  var feat = "hole";
+  document.querySelectorAll("#featSeg button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      feat = b.dataset.v;
+      document.querySelectorAll("#featSeg button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      if (feat === "pin") { cMin.value = "9.80"; cMax.value = "10.00"; cAct.value = "9.90"; }
+      else { cMin.value = "10.00"; cMax.value = "10.20"; cAct.value = "10.15"; }
+      calc();
+    });
+  });
+  var cMin = document.getElementById("cMin"), cMax = document.getElementById("cMax"), cTol = document.getElementById("cTol"),
+      cMod = document.getElementById("cMod"), cAct = document.getElementById("cAct"), cDx = document.getElementById("cDx"), cDy = document.getElementById("cDy");
+  [cMin, cMax, cTol, cMod, cAct, cDx, cDy].forEach(function (i) { i.addEventListener("input", calc); });
+  function f3(n) { return (Math.round(n * 1000) / 1000).toFixed(3); }
+  function calc() {
+    var lo = +cMin.value, hi = +cMax.value, tol = +cTol.value, mod = cMod.value, act = +cAct.value, dx = +cDx.value, dy = +cDy.value;
+    var res = document.getElementById("cResults"), work = document.getElementById("cWork"), verdict = document.getElementById("cVerdict");
+    if (!(hi >= lo) || isNaN(tol) || isNaN(act)) { res.innerHTML = '<dt>Check inputs</dt><dd>Max size must be ≥ min size</dd>'; return; }
+    var mmc = feat === "hole" ? lo : hi, lmc = feat === "hole" ? hi : lo;
+    var sizeOK = act >= lo - 1e-9 && act <= hi + 1e-9;
+    var bonus = 0;
+    if (mod === "M") bonus = Math.abs(act - mmc);
+    if (mod === "L") bonus = Math.abs(act - lmc);
+    if (!sizeOK) bonus = 0;
+    var allowed = tol + bonus;
+    var r = Math.sqrt(dx * dx + dy * dy), actualPos = 2 * r;
+    var posOK = actualPos <= allowed + 1e-9;
+    var vc, vcLabel;
+    if (mod === "L") { vc = feat === "hole" ? lmc + tol : lmc - tol; vcLabel = "Virtual cond. (LMC)"; }
+    else { vc = feat === "hole" ? mmc - tol : mmc + tol; vcLabel = mod === "M" ? "Virtual condition" : "Virtual cond. (if MMC)"; }
+    res.innerHTML =
+      '<dt>MMC size</dt><dd>Ø' + f3(mmc) + '</dd><dt>LMC size</dt><dd>Ø' + f3(lmc) + '</dd>' +
+      '<dt>Bonus tolerance</dt><dd>' + (mod === "R" ? "none (RFS)" : "Ø" + f3(bonus)) + '</dd>' +
+      '<dt>Allowed position</dt><dd><strong>Ø' + f3(allowed) + '</strong></dd>' +
+      '<dt>Actual position</dt><dd><strong>Ø' + f3(actualPos) + '</strong></dd>' +
+      '<dt>' + vcLabel + '</dt><dd>Ø' + f3(vc) + '</dd>';
+    var pass = sizeOK && posOK;
+    verdict.innerHTML = '<span class="verdict ' + (pass ? "pass" : "fail") + '">' + (pass ? "ACCEPT" : "REJECT") + '</span>';
+    var lines = [];
+    lines.push("Actual position = 2 × √(" + dx + "² + " + dy + "²) = Ø" + f3(actualPos));
+    if (!sizeOK) lines.push("Size Ø" + act + " is outside " + lo + "–" + hi + ": rejected on size.");
+    else if (mod === "M") lines.push("Bonus = |" + act + " − " + f3(mmc) + " (MMC)| = " + f3(bonus));
+    else if (mod === "L") lines.push("Bonus = |" + act + " − " + f3(lmc) + " (LMC)| = " + f3(bonus));
+    else lines.push("RFS: no bonus, zone stays Ø" + f3(tol));
+    lines.push("Allowed = " + f3(tol) + " + " + f3(bonus) + " = Ø" + f3(allowed));
+    lines.push(f3(actualPos) + (posOK ? " ≤ " : " > ") + f3(allowed) + "  →  position " + (posOK ? "OK" : "out"));
+    work.textContent = lines.join("\n");
+    drawZone(tol, allowed, dx, dy, posOK && sizeOK);
+  }
+  function drawZone(tol, allowed, dx, dy, ok) {
+    var svg = document.getElementById("zoneSvg"), C = 150;
+    var extent = Math.max(allowed / 2, Math.sqrt(dx * dx + dy * dy), tol / 2, 0.01) * 1.25;
+    var k = 120 / extent;
+    var px = C + dx * k, py = C - dy * k;
+    var h = '';
+    h += '<rect x="0" y="0" width="300" height="300" fill="none"/>';
+    h += '<path d="M' + C + ' 14V286M14 ' + C + 'H286" stroke="var(--line)" stroke-width="1" fill="none"/>';
+    h += '<circle cx="' + C + '" cy="' + C + '" r="' + (allowed / 2 * k) + '" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/>';
+    h += '<circle cx="' + C + '" cy="' + C + '" r="' + (tol / 2 * k) + '" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    h += '<path d="M' + C + ' ' + C + 'L' + px + ' ' + py + '" stroke="var(--red)" stroke-width="1.2" stroke-dasharray="3 3" fill="none"/>';
+    h += '<circle cx="' + C + '" cy="' + C + '" r="3" fill="var(--ink)"/>';
+    h += '<path d="M' + (px - 6) + ' ' + (py - 6) + 'L' + (px + 6) + ' ' + (py + 6) + 'M' + (px - 6) + ' ' + (py + 6) + 'L' + (px + 6) + ' ' + (py - 6) + '" stroke="var(--red)" stroke-width="2.4" fill="none"/>';
+    h += '<text x="' + (C + 6) + '" y="' + (C + 16) + '" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--muted)">true pos.</text>';
+    h += '<text x="286" y="' + (C - 6) + '" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--muted)">+X</text>';
+    h += '<text x="' + (C + 6) + '" y="24" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--muted)">+Y</text>';
+    h += '<text x="14" y="292" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--muted)">radius shown = ' + f3(extent) + ' mm</text>';
+    svg.innerHTML = h;
+  }
+  calc();
+
+  // ---------- Feature control frame ----------
+  var fSym = document.getElementById("fSym"), fDia = document.getElementById("fDia"), fTol = document.getElementById("fTol"),
+      fMod = document.getElementById("fMod"), fA = document.getElementById("fA"), fB = document.getElementById("fB"), fC = document.getElementById("fC");
+  S.forEach(function (s) { var o = document.createElement("option"); o.value = s.id; o.textContent = s.name.replace(" (roundness)", ""); fSym.appendChild(o); });
+  [fA, fB, fC].forEach(function (sel) {
+    ["", "A", "B", "C", "D", "A Ⓜ", "B Ⓜ", "C Ⓜ"].forEach(function (v) { var o = document.createElement("option"); o.value = v; o.textContent = v || "—"; sel.appendChild(o); });
+  });
+  var PRESETS = [
+    { n: "Bolt hole pattern", v: ["position", "1", "0.25", "M", "A", "B", "C"] },
+    { n: "Square bore to face", v: ["perpendicularity", "1", "0.05", "", "A", "", ""] },
+    { n: "Cast surface", v: ["profileSurface", "0", "0.80", "", "A", "B", "C"] },
+    { n: "Sealing face", v: ["flatness", "0", "0.02", "", "", "", ""] },
+    { n: "Shaft runout", v: ["totalRunout", "0", "0.03", "", "A", "", ""] },
+    { n: "Find the mistake", v: ["flatness", "1", "0.05", "M", "A", "", ""] }
+  ];
+  var presets = document.getElementById("presets");
+  PRESETS.forEach(function (p) {
+    var b = document.createElement("button"); b.className = "chip"; b.textContent = p.n;
+    b.addEventListener("click", function () {
+      fSym.value = p.v[0]; fDia.value = p.v[1]; fTol.value = p.v[2]; fMod.value = p.v[3]; fA.value = p.v[4]; fB.value = p.v[5]; fC.value = p.v[6]; fcf();
+    });
+    presets.appendChild(b);
+  });
+  [fSym, fDia, fTol, fMod, fA, fB, fC].forEach(function (i) { i.addEventListener("input", fcf); i.addEventListener("change", fcf); });
+  function circ(ch) { return '<span class="circ">' + ch + '</span>'; }
+  function datumCell(v) {
+    var parts = v.split(" ");
+    return parts[0] + (parts[1] ? " " + circ("M") : "");
+  }
+  var ORD = ["primary", "secondary", "tertiary"];
+  var DOF = ["3 points of contact (stops 3 DOF)", "2 points (stops 2 more)", "1 point (stops the last)"];
+  function fcf() {
+    var s = byId[fSym.value], dia = fDia.value === "1", tol = fTol.value || "0", mod = fMod.value;
+    var ds = [fA.value, fB.value, fC.value];
+    var datums = ds.filter(function (d) { return d; });
+    var cells = '<div><span class="g">' + glyph(s.id, 30) + '</span></div>';
+    cells += '<div>' + (dia ? "Ø" : "") + tol + (mod ? " " + circ(mod) : "") + '</div>';
+    datums.forEach(function (d) { cells += '<div>' + datumCell(d) + '</div>'; });
+    document.getElementById("fcfOut").innerHTML = cells;
+
+    var issues = [];
+    if (s.datum === "never" && datums.length) issues.push(s.name + " is a form control. It can't reference a datum.");
+    if (s.datum === "required" && !datums.length) issues.push(s.name + " needs at least one datum reference.");
+    if (dia && /^(No)/.test(s.dia)) issues.push("A Ø zone doesn't apply to " + s.name.toLowerCase() + ".");
+    if (mod && /RFS only|^No$/.test(s.mod)) issues.push(s.name + " can't take an " + (mod === "M" ? "MMC" : "LMC") + " modifier. It's always RFS.");
+    if (mod && s.id === "flatness" && !dia) issues.push("MMC on flatness only works for a derived median plane of a feature of size, which is rare. Check the intent.");
+    if (mod && /^(Yes, when|Only when)/.test(s.mod)) issues.push("OK only if this frame applies to a feature of size (hole, pin, slot), not a plain surface.");
+    if (s.id === "position" && !dia) issues.push("Position on a round hole or pin normally uses a Ø zone. Width zones are for slots and tabs.");
+    var seen = {}; ds.forEach(function (d) { if (!d) return; var L = d[0]; if (seen[L]) issues.push("Datum " + L + " appears twice."); seen[L] = 1; });
+    if (!fA.value && (fB.value || fC.value)) issues.push("Fill datums in order: primary first.");
+    if (s.removed) issues.push(s.name + " was removed in Y14.5-2018. Use position, runout, or profile on new drawings.");
+    if (+tol <= 0) issues.push("Tolerance must be greater than zero.");
+
+    var zoneWord = dia ? "a Ø" + tol + " cylinder" : "two parallel " + (s.cat === "profile" ? "offset boundaries" : "planes") + " " + tol + " apart";
+    var subject = {
+      form: "The surface", profile: "The surface", orientation: dia ? "The axis of this feature" : "The surface",
+      location: dia ? "The axis of this feature" : "The center plane of this feature", runout: "The surface"
+    }[s.cat];
+    var rel = "";
+    if (s.cat === "orientation") rel = s.id === "perpendicularity" ? " oriented at exactly 90° to" : s.id === "parallelism" ? " exactly parallel to" : " at the basic angle to";
+    var txt;
+    if (s.cat === "runout") txt = "When the part is rotated 360° about datum axis " + (datums[0] || "?")[0] + ", the dial indicator reading " + (s.id === "totalRunout" ? "over the whole surface" : "at each circular element") + " can't move more than " + tol + " total.";
+    else if (s.cat === "form") txt = subject + " must lie within " + zoneWord + ". This controls shape only, with no relationship to other features.";
+    else if (s.cat === "orientation") txt = subject + " must lie within " + zoneWord + rel + " datum " + datums.map(function (d) { return d[0]; }).join(", ") + ". This controls orientation, not location.";
+    else if (s.cat === "location") txt = subject + " must lie within " + zoneWord + " centered on its true position, which is located by basic dimensions from " + (datums.length ? "datums " + datums.map(function (d) { return d[0]; }).join(", ") : "the datums") + ".";
+    else txt = subject + " must lie within " + zoneWord + " centered on the true profile defined by basic dimensions" + (datums.length ? ", located and oriented from datums " + datums.map(function (d) { return d[0]; }).join(", ") + "." : ". With no datums this controls form only.");
+    var html = '<p>' + txt + '</p>';
+    if (mod === "M") html += '<p>Ⓜ: the stated tolerance applies when the feature is at maximum material. As it moves toward LMC, the difference is added as bonus tolerance.</p>';
+    else if (mod === "L") html += '<p>Ⓛ: the stated tolerance applies at least material, typically used to protect minimum wall thickness.</p>';
+    else if (s.mod.indexOf("Yes") === 0) html += '<p>No modifier means RFS: the zone stays the same size regardless of the feature\'s actual size.</p>';
+    if (datums.length) html += '<p style="color:var(--muted);font-size:14px">' + datums.map(function (d, i) { return "Datum " + d[0] + " is " + ORD[i] + ": " + DOF[i] + (d.indexOf("Ⓜ") > 0 ? ", referenced at MMB so the datum can shift" : "") + "."; }).join(" ") + '</p>';
+    document.getElementById("fRead").innerHTML = html;
+    var ul = document.getElementById("fIssues");
+    ul.innerHTML = issues.length ? issues.map(function (i) { return '<li>' + i + '</li>'; }).join("") : '<li class="ok">Valid callout per Y14.5-2018.</li>';
+  }
+  fSym.value = "position"; fDia.value = "1"; fTol.value = "0.25"; fMod.value = "M"; fA.value = "A"; fB.value = "B"; fC.value = "C";
+  fcf();
+
+  // Initial tab from hash or last visit
+  var h = (location.hash || "").slice(1);
+  showTab(tabs.indexOf(h) >= 0 ? h : (sGet("gdt-tab") || "symbols"));
+})();
+</script>
+</body>
+</html>
